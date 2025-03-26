@@ -3,4 +3,13 @@ import connectDB from "./db/index.js"; // import connectDB form DB index file
 
 dotenv.config({ path: "./env" }); // define the path of the .env
 
-connectDB();
+// connectDB is an async function, it returns us a promise. And we know that we can use .then(to get resolved promise) and .catch(to catch rejected promise)
+connectDB()
+  .then(() => {
+    app.listen(process.env.PORT || 8001, () => {
+      console.log(`Server is up and running at port:${process.env.PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log(`Mongo Connection Failed!!`, err);
+  });
