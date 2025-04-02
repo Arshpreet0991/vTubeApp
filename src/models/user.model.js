@@ -49,34 +49,47 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// generating JWT token
+// encrypting the password using Hooks (pre)
+userSchema.pre("save", async function (next) {
+  if (!this.modified("password")) return next(); //exiting the function if the field being modified is anything other than password
+  this.password = bcrypt.hash(this.password, 10); // encrypting the password. Two params, 1) what to encrypt 2) no. of rounds the algorithm takes to hash the password
+  next(); // pass the next flag to next middleware
+});
+
+// user auth/ decrypting password
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password); // decrypts and compare the passwords and returns a boolean
+};
+
+// create logged in functionality
+
+// generate access token
 userSchema.methods.generateAccessToken = function () {
-  jwt.sign(
+  // short lived access token
+  return jwt.sign(
     {
-      _id: this._id,
+      _id: this._id, // getting from mongoose
       email: this.email,
       username: this.username,
-      fullname: this.fullname, // key is payload and this.fullname is coming from DB
     },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: ACCESS_TOKEN_EXPIRY }
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
   );
 };
 
-// generating refresh token
-userSchema.methods.generateRefreshToken = function () {
-  jwt.sign(
+// generate refresh token - long lived token
+
+userSchema.methods.generateAccessToken = function () {
+  // Long lived access token
+  return jwt.sign(
     {
-      _id: this._id,
+      _id: this._id, // getting from mongoose
       email: this.email,
       username: this.username,
-      fullname: this.fullname, // key is payload and this.fullname is coming from DB
     },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: REFRESH_TOKEN_EXPIRY }
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
   );
 };
-
-userSchema.methods.generateRefreshToken = function () {};
 
 export const User = mongoose.model("User", userSchema);
