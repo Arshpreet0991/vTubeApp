@@ -20,3 +20,33 @@ Health check APIs are basically an request to a server in which we confirm that 
    import { ApiResponse } from "../utils/ApiResponse.js";
    import { asyncHandler } from "../utils/asyncHandler.js";
    ```
+
+3. The usual way of doing this would be something like this:
+
+   ```javascript
+   const healthcheck = async (req, res) => {
+     try {
+     } catch (error) {}
+   };
+   ```
+
+   - Since there is no guarantee that we will get a response or not, we have to use the try catch block to send the response.
+   - Also, since the req and response can take time, we will have to make this an async function
+   - To handle these kind of cases we made asyncHandler in the utils folder.
+
+4. So, the professional way of writing the healthcheck would be:
+
+   ```javascript
+   const healthcheck = asyncHandler(async (req, res) => {
+     return res.json(new ApiResponse(200, "OK", "Healthcheck Passed"));
+   });
+   ```
+
+   - In async(req,res), we used async so that if we make a DB call, then it will be an async operation.
+   - we are sending a json response which is being standardized by our Apiresponse util. Here we have created a new object from the Apiresponse Class.
+
+5. export the healthcheck variable
+
+   ```javascript
+   export { healthcheck };
+   ```
