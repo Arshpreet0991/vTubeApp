@@ -83,3 +83,7 @@ Health check APIs are basically an request to a server in which we confirm that 
    ```
 
    - the '/api/v1/healthcheck' is the route that we want to serve, and whenever someone sends us the request on this link, we will pass the control to healthcheckRouter. It will handle the request.
+
+8. Open terminal and run server
+   9.Go to postman and in the get request, type http://localhost:8000/api/v1/healthcheck
+   - we will get a response and ok status.
