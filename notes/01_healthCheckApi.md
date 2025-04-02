@@ -50,3 +50,36 @@ Health check APIs are basically an request to a server in which we confirm that 
    ```javascript
    export { healthcheck };
    ```
+
+6. Create a route Handler.
+
+   - each model will get a controller and each controller will get their own route handler.
+   - Go to the routes folder and create a file named healthcheck.routes.js. Inside the router we write this :
+
+   ```javascript
+   import { Router } from "express";
+   import { healthcheck } from "../controllers/healthcheck.controllers.js";
+
+   const router = Router();
+   router.route("/").get(healthcheck);
+
+   export default router;
+   ```
+
+   - the "/" here is not the homepage. It means here that the control is passed to this controller here.
+
+7. Now go to app.js in the root folder. We will bring our routes into the app.js
+
+   - we import the required routes from routes folder:
+
+   ```javascript
+   import healthcheckRouter from "./routes/healthcheck.routes.js";
+   ```
+
+   - then we we use middlewares app.use
+
+   ```javascript
+   app.use("/api/v1/healthcheck", healthcheckRouter);
+   ```
+
+   - the '/api/v1/healthcheck' is the route that we want to serve, and whenever someone sends us the request on this link, we will pass the control to healthcheckRouter. It will handle the request.
